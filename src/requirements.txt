@@ -1,0 +1,26 @@
+# Runtime dependencies — installed by Cloud Functions build step.
+# This file must live inside src/ so that archive_file includes it at the zip root.
+# Keep in sync with the root requirements.txt.
+pydantic>=2.7,<3
+httpx>=0.27,<1
+
+# AWS
+boto3>=1.34,<2
+
+# Azure
+azure-functions>=1.18,<2
+azure-identity>=1.17,<2
+openai>=1.30,<2
+azure-cosmos>=4.7,<5
+
+# GCP
+google-cloud-aiplatform>=1.50,<2
+google-cloud-firestore>=2.16,<3
+google-cloud-secret-manager>=2.20,<3
+vertexai>=1.50,<2
+
+# Observability — OTel traces + logs → Datadog via OTLP/HTTP direct intake
+# Using HTTP exporter (port 4318) instead of gRPC (port 4317): simpler TLS
+# handling, no grpcio native dependency, works reliably in Cloud Functions.
+opentelemetry-sdk>=1.24,<2
+opentelemetry-exporter-otlp-proto-http>=1.24,<2

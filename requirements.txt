@@ -1,0 +1,22 @@
+# Runtime dependencies — included in Lambda/Function deployment package
+pydantic>=2.7,<3
+httpx>=0.27,<1
+
+# AWS
+boto3>=1.34,<2
+
+# Azure
+openai>=1.30,<2
+azure-cosmos>=4.7,<5
+
+# GCP
+google-cloud-aiplatform>=1.50,<2
+google-cloud-firestore>=2.16,<3
+google-cloud-secret-manager>=2.20,<3
+vertexai>=1.50,<2
+
+# Observability — OTel traces + logs → Datadog via OTLP/HTTP (localhost:4318)
+# On AWS Lambda: DD Lambda Extension receives on localhost:4318, forwards to Datadog HTTPS/443
+# On GCP/Azure: set OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.<dd-site>:443 for direct intake
+opentelemetry-sdk>=1.24,<2
+opentelemetry-exporter-otlp-proto-http>=1.24,<2

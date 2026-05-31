@@ -1,0 +1,41 @@
+# Azure Functions Python — custom container image for Azure Container Apps.
+#
+# Why this image:
+#   The Azure Functions host runs inside the container and loads our Python
+#   v2 model handlers (@app.route in src/azure_function_app.py and
+#   src/azure_feedback_function_app.py). This lets us keep the existing
+#   handler code unchanged while moving off Flex Consumption to Container
+#   Apps — required so a Datadog Agent sidecar can absorb OTLP locally on
+#   :4318 (Flex doesn't support sidecars).
+#
+# Build context: repo root.
+#
+# Manual build:
+#   docker build -f Dockerfile.azure -t smb-inbox-triage-azure:local .
+#
+# Build & push to ACR:
+#   az acr login --name <acr-name>
+#   docker build -f Dockerfile.azure \
+#     -t <acr-name>.azurecr.io/smb-inbox-triage:latest .
+#   docker push <acr-name>.azurecr.io/smb-inbox-triage:latest
+
+# NOTE on container user: this image intentionally runs as root. The Azure
+# Functions base image is designed to run as root — the Functions host manages
+# worker processes and needs write access to /home/site/wwwroot,
+# /azure-functions-host, and the logging paths. Adding a non-root USER to the
+# stock image typically breaks the host (permission errors / "0 functions
+# found"). Non-root on Container Apps is possible but must be validated against
+# the running host; it is not a one-line change. Root here is a property of the
+# upstream base image, not an oversight.
+FROM mcr.microsoft.com/azure-functions/python:4-python3.12
+
+# Workspace
+ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
+    AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
+    # Required for Python v2 decorator model (same as Flex Consumption)
+    AzureWebJobsFeatureFlags=EnableWorkerIndexing \
+    # Required to enable OTel from the worker process
+    PYTHON_ENABLE_OPENTELEMETRY=true
+# IMPORTANT: do NOT set FUNCTIONS_HTTPWORKER_PORT here. That env var puts the
+# Functions host into "custom handler" mode (runtime=Custom), which makes it
+# look for an external HTTP worker on that port and IGNORE the Python

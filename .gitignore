@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.pytest-cache*/
+pytest-cache-files-*/
+
+# Build artifacts
+.build/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars.local
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+# Terraform plan files (may embed resolved secrets)
+*.tfplan
+tfplan
+tfplan.*
+
+# Secrets — never commit
+*.pem
+*.key
+secrets.json
+# OAuth / credential files
+gmail-oauth-credentials.json
+gmail-token.json
+*-credentials.json
+*-token.json
+.env.*
+!.env.example
+
+# Eval outputs
+evals/comparison_results.json
+evals/comparison_results.html
+
+# Backups & local scratch / junk
+*.bak
+log.txt
+output.txt
+query.txt
+__test__.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude
+.claude/*
+!.claude/prompt.md

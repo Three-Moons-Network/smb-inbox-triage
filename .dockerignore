@@ -1,0 +1,18 @@
+# Exclude everything not needed for the Cloud Run image build.
+# The Dockerfile only COPYs src/ and src/requirements.txt.
+
+infra/
+.build/
+.github/
+tests/
+evals/
+docs/
+.claude/
+*.md
+*.yaml
+*.yml
+Makefile
+.env
+.env.*
+*.tfvars
+*.tfstate*

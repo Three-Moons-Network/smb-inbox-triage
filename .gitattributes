@@ -1,0 +1,13 @@
+# Normalize line endings: store text as LF in the repo and check out as LF
+# on every platform. Keeps the tree Linux-compatible without dos2unix, even
+# when cloned on Windows.
+* text=auto eol=lf
+
+# Shell scripts must stay LF (they break with CRLF).
+*.sh   text eol=lf
+
+# Mark common binary types so Git never touches their bytes.
+*.png  binary
+*.jpg  binary
+*.pdf  binary
+*.zip  binary

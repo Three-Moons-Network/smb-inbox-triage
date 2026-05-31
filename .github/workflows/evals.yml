@@ -1,0 +1,45 @@
+name: Eval Regression Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "evals/**"
+
+jobs:
+  eval-mock:
+    name: Eval — Mock (always runs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run eval (mock adapter)
+        run: python -m evals.run_evals --adapter mock --threshold 0.90
+
+  eval-bedrock:
+    name: Eval — Bedrock (on schedule / manual)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    environment: aws-dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+      - name: Run eval (Bedrock)
+        env:
+          BEDROCK_MODEL_ID: anthropic.claude-3-haiku-20240307-v1:0
+        run: python -m evals.run_evals --adapter bedrock --threshold 0.90

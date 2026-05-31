@@ -1,0 +1,39 @@
+# Cloud Build pipeline — build and push the smb-inbox-triage Cloud Run image.
+#
+# The same image is used by both the classifier and feedback Cloud Run services;
+# FUNCTION_TARGET in each service's env selects the entry point at runtime.
+#
+# Manual trigger (from repo root):
+#   gcloud builds submit . \
+#     --config=cloudbuild.yaml \
+#     --substitutions=_TAG=$(git rev-parse --short HEAD) \
+#     --project=your-gcp-project-id
+#
+# After a successful build, update the Terraform image_tag variable and
+# run `terraform apply` in infra/environments/gcp-dev to deploy the new image.
+
+substitutions:
+  _REGION: us-central1
+  _PROJECT: your-gcp-project-id
+  _REPO: smb-inbox-triage-dev-functions   # Artifact Registry repo created by Terraform
+  _TAG: latest
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_PROJECT}/${_REPO}/smb-inbox-triage:${_TAG}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_PROJECT}/${_REPO}/smb-inbox-triage:latest
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/${_PROJECT}/${_REPO}/smb-inbox-triage:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${_PROJECT}/${_REPO}/smb-inbox-triage:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_MEDIUM

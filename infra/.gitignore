@@ -1,0 +1,28 @@
+# Terraform state and secrets — never commit these
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.tfstate
+crash.log
+crash.*.log
+
+# Variable files — secrets injected via TF_VAR_* env vars or CI secrets
+# Do NOT commit *.tfvars — use TF_VAR_ environment variables or CI injection
+*.tfvars
+*.tfvars.json
+
+# Override files are usually local-only
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Build artifacts
+../.build/
+
+# .terraform.lock.hcl SHOULD be committed (provider version pinning).
+# Run `terraform init` in each environment directory to generate it,
+# then commit it alongside your .tf files.
+# See: https://developer.hashicorp.com/terraform/language/files/dependency-lock
+!.terraform.lock.hcl

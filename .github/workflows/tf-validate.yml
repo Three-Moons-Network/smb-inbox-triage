@@ -1,0 +1,52 @@
+name: Terraform Validate
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+
+jobs:
+  validate-aws:
+    name: Validate AWS module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.8"
+      - name: Init (no backend)
+        run: terraform init -backend=false
+        working-directory: infra/modules/aws
+      - name: Validate
+        run: terraform validate
+        working-directory: infra/modules/aws
+
+  validate-azure:
+    name: Validate Azure module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.8"
+      - name: Init (no backend)
+        run: terraform init -backend=false
+        working-directory: infra/modules/azure
+      - name: Validate
+        run: terraform validate
+        working-directory: infra/modules/azure
+
+  validate-gcp:
+    name: Validate GCP module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.8"
+      - name: Init (no backend)
+        run: terraform init -backend=false
+        working-directory: infra/modules/gcp
+      - name: Validate
+        run: terraform validate
+        working-directory: infra/modules/gcp
